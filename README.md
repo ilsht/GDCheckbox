@@ -7,12 +7,26 @@ An easy to use custom checkbox/radio button component for iOS, with support of I
 
 
 # Requirements
-- Xcode 7+
-- Swift 4
+- Xcode 10+
+- Swift 5
 - iOS 8+
 
 # Installation
-Install manually
+## Cocoapods
+```
+source 'https://github.com/CocoaPods/Specs.git'
+platform :ios, '9.0'
+use_frameworks!
+
+target '<Your Target Name>' do
+    pod 'GDCheckbox'
+end
+```
+    pod update
+    pod install
+
+
+## Manually
 ------
 Drag `GDCheckbox.swift` to your project and use!
 
