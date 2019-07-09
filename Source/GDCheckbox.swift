@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 @IBDesignable
-open class SRCheckbox: UIControl {
+open class GDCheckbox: UIControl {
 // MARK: - Variables
 
     @IBInspectable
