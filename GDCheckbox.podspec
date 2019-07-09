@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name            = "GDCheckbox"
-  s.version         = "1.0.1"
+  s.version         = "1.0.2"
   s.summary         = "Simple checkbox/radio box component for iOS"
   s.homepage        = "https://github.com/ilsht/GDCheckbox"
   s.screenshots     = "https://github.com/ilsht/GDCheckbox/blob/master/screenshots/example.gif?raw=true"
