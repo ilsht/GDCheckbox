@@ -6,87 +6,65 @@
 //  Copyright © 2017 Saeidbsn. All rights reserved.
 //  saeidbsn.com
 
-
+import Foundation
 import UIKit
 
 @IBDesignable
-open class GDCheckbox: UIControl {
-    //MARK: - public properties
-    
+open class SRCheckbox: UIControl {
+// MARK: - Variables
+
     @IBInspectable
-    open var containerWidth: CGFloat = 2.0{
-        didSet{
-            drawLayers()
-        }
+    open var containerWidth: CGFloat = 2.0 {
+        didSet { setNeedsLayout() }
     }
     
     @IBInspectable
-    open var containerColor: UIColor = UIColor.black{
-        didSet{
-            drawColors()
-        }
+    open var containerColor: UIColor = UIColor.black {
+        didSet { setNeedsLayout() }
     }
     
     @IBInspectable
-    open var checkWidth: CGFloat = 3.0{
-        didSet{
-            drawLayers()
-        }
+    open var checkWidth: CGFloat = 3.0 {
+        didSet { setNeedsLayout() }
     }
     
     @IBInspectable
-    open var checkColor: UIColor = UIColor.black{
-        didSet{
-            drawColors()
-        }
+    open var checkColor: UIColor = UIColor.black {
+        didSet { drawCheckmark() }
     }
     
     @IBInspectable
-    open var shouldFillContainer: Bool = false{
-        didSet{
-            drawColors()
-        }
+    open var shouldFillContainer: Bool = false {
+        didSet { drawCheckmark() }
     }
     
     @IBInspectable
-    open var shouldAnimate: Bool = false{
-        didSet{
-        }
-    }
+    open var shouldAnimate: Bool = false
     
     @IBInspectable
     open var isOn: Bool = false{
-        didSet{
-            drawColors()
-        }
+        didSet { drawCheckmark() }
     }
     
     @IBInspectable
-    open var isSquare: Bool = false{
-        didSet{
-            drawLayers()
-        }
+    open var isSquare: Bool = false {
+        didSet { setNeedsLayout() }
     }
     
     @IBInspectable
-    open var isRadiobox: Bool = false{
-        didSet{
-            drawLayers()
-        }
+    open var isRadiobox: Bool = false {
+        didSet { setNeedsLayout() }
     }
     
     @IBInspectable
     open var isCircular: Bool = false{
-        didSet{
-            drawLayers()
-        }
+        didSet { setNeedsLayout() }
     }
     
-    //MARK: - internal properties
     fileprivate var containerLayer = CAShapeLayer()
-    fileprivate var checkLayer = CAShapeLayer()
+    fileprivate var checkmarkLayer = CAShapeLayer()
     
-    fileprivate var containerFrame: CGRect{
+    fileprivate var containerFrame: CGRect {
         let width = bounds.width
         let height = bounds.height
         
@@ -109,15 +87,15 @@ open class GDCheckbox: UIControl {
         return CGRect(x: x + halfContainerWidth, y: y + halfContainerWidth, width: eqLength - halfContainerWidth, height: eqLength - halfContainerWidth)
     }
     
-    fileprivate var containerPath: UIBezierPath{
-        if isRadiobox || isCircular{
+    fileprivate var containerPath: UIBezierPath {
+        if isRadiobox || isCircular {
             return UIBezierPath(ovalIn: containerFrame)
         }else{
             return UIBezierPath(rect: containerFrame)
         }
     }
     
-    fileprivate var checkPath: UIBezierPath{
+    fileprivate var checkPath: UIBezierPath {
         let containerFrame = self.containerFrame
         
         let inset = containerWidth / 2
@@ -128,7 +106,7 @@ open class GDCheckbox: UIControl {
         let x = origin.x
         let y = origin.y
         
-        if isSquare{
+        if isSquare {
             let unit = checkFrame.width / 4
             
             path.move(to: CGPoint(x: x + unit, y: y + unit))
@@ -137,86 +115,22 @@ open class GDCheckbox: UIControl {
             path.addLine(to: CGPoint(x: x + (3 * unit), y: y + unit))
             path.addLine(to: CGPoint(x: x +  unit, y: y + unit))
             path.close()
-        }else if isRadiobox{
+        } else if isRadiobox {
             let unit = checkFrame.width / 4
             
             path.addArc(withCenter: CGPoint(x: x + (2 * unit), y: y + (2 * unit)), radius: containerFrame.width / 3 - checkWidth, startAngle: 0.0, endAngle: CGFloat(Double.pi * 2), clockwise: true)
-        }else{
+        } else {
             let unit = checkFrame.width / 33
             
             path.move(to: CGPoint(x: x + (7 * unit), y: y + (18 * unit)))
             path.addLine(to: CGPoint(x: x + (14 * unit), y: y + (25 * unit)))
             path.addLine(to: CGPoint(x: x + (27 * unit), y: y + (10 * unit)))
         }
+        
         return path
     }
     
-    //MARK: - layouts
-    open override func layoutSubviews() {
-        super.layoutSubviews()
-        drawLayers()
-    }
-    
-    fileprivate func drawLayers(){
-        containerLayer.frame = bounds
-        containerLayer.lineWidth = containerWidth
-        containerLayer.path = containerPath.cgPath
-        
-        checkLayer.frame = bounds
-        checkLayer.lineWidth = checkWidth
-        checkLayer.path = checkPath.cgPath
-        checkLayer.lineJoin = CAShapeLayerLineJoin.round
-    }
-    
-    fileprivate func drawColors(){
-        DispatchQueue.main.async {
-            self.containerLayer.strokeColor = self.containerColor.cgColor
-            
-            if self.isOn{
-                self.containerLayer.fillColor = self.shouldFillContainer ? self.containerColor.cgColor : UIColor.clear.cgColor
-                
-                if self.shouldAnimate && !self.isRadiobox && !self.isSquare{
-                    self.checkLayer.strokeColor = self.checkColor.cgColor
-                    
-                    let anim = CABasicAnimation(keyPath: "strokeEnd")
-                    anim.duration = 0.2
-                    anim.fromValue = 0.0
-                    anim.toValue = 1.0
-                    
-                    self.checkLayer.add(anim, forKey: "stroke")
-                }else{
-                    if self.isSquare{
-                        self.checkLayer.fillColor = self.checkColor.cgColor
-                    }else if self.isRadiobox{
-                        self.checkLayer.fillColor = self.checkColor.cgColor
-                    }else{
-                        self.checkLayer.strokeColor = self.checkColor.cgColor
-                    }
-                }
-            }else{
-                self.containerLayer.fillColor = UIColor.clear.cgColor
-                if self.isSquare{
-                    self.checkLayer.fillColor = UIColor.clear.cgColor
-                }else if self.isRadiobox{
-                    self.checkLayer.fillColor = UIColor.clear.cgColor
-                }else{
-                    self.checkLayer.strokeColor = UIColor.clear.cgColor
-                }
-            }
-            self.setNeedsDisplay()
-        }
-    }
-    
-    //MARK: - initialization
-    fileprivate func initializeCheckbox(){
-        checkLayer.fillColor = UIColor.clear.cgColor
-        
-        drawLayers()
-        drawColors()
-        
-        layer.addSublayer(containerLayer)
-        layer.addSublayer(checkLayer)
-    }
+// MARK: - Methods
     
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -228,11 +142,75 @@ open class GDCheckbox: UIControl {
         initializeCheckbox()
     }
     
-    //MARK: - touch events
+    fileprivate func initializeCheckbox() {
+        checkmarkLayer.fillColor = UIColor.clear.cgColor
+        updateLayers()
+        drawCheckmark()
+        layer.addSublayer(containerLayer)
+        layer.addSublayer(checkmarkLayer)
+    }
+    
+    open override func layoutSubviews() {
+        super.layoutSubviews()
+        updateLayers()
+    }
+    
+    fileprivate func updateLayers() {
+        containerLayer.frame = bounds
+        containerLayer.lineWidth = containerWidth
+        containerLayer.path = containerPath.cgPath
+        
+        checkmarkLayer.frame = bounds
+        checkmarkLayer.lineWidth = checkWidth
+        checkmarkLayer.path = checkPath.cgPath
+        checkmarkLayer.lineJoin = CAShapeLayerLineJoin.round
+    }
+    
+    fileprivate func drawCheckmark() {
+        DispatchQueue.main.async {
+            self.containerLayer.strokeColor = self.containerColor.cgColor
+            
+            if self.isOn {
+                self.containerLayer.fillColor = self.shouldFillContainer ? self.containerColor.cgColor : UIColor.clear.cgColor
+                
+                if self.shouldAnimate && !self.isRadiobox && !self.isSquare {
+                    self.checkmarkLayer.strokeColor = self.checkColor.cgColor
+                    
+                    let anim = CABasicAnimation(keyPath: "strokeEnd")
+                    anim.duration = 0.2
+                    anim.fromValue = 0.0
+                    anim.toValue = 1.0
+                    
+                    self.checkmarkLayer.add(anim, forKey: "stroke")
+                } else {
+                    if self.isSquare {
+                        self.checkmarkLayer.fillColor = self.checkColor.cgColor
+                    } else if self.isRadiobox {
+                        self.checkmarkLayer.fillColor = self.checkColor.cgColor
+                    } else {
+                        self.checkmarkLayer.strokeColor = self.checkColor.cgColor
+                    }
+                }
+            } else {
+                self.containerLayer.fillColor = UIColor.clear.cgColor
+                
+                if self.isSquare {
+                    self.checkmarkLayer.fillColor = UIColor.clear.cgColor
+                } else if self.isRadiobox {
+                    self.checkmarkLayer.fillColor = UIColor.clear.cgColor
+                } else {
+                    self.checkmarkLayer.strokeColor = UIColor.clear.cgColor
+                }
+            }
+            
+            self.setNeedsDisplay()
+        }
+    }
+    
     open override func beginTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
         isOn = !isOn
         sendActions(for: [.valueChanged])
-        
         return true
     }
 }
+
